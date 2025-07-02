@@ -1,24 +1,543 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>io-metric-dashboard</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IO Metric - Precision | Monitoring Industriel</title>
+    <meta name="description" content="Plateforme unifiée de monitoring industriel temps réel pour optimiser vos performances opérationnelles">
+    <meta name="author" content="IO Metric - Precision">
 
-    <meta property="og:title" content="io-metric-dashboard" />
-    <meta property="og:description" content="Lovable Generated Project" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#home">
+                <img src="ChatGPT Image Jun 28, 2025, 10_40_53 AM copy.png" alt="IO Metric - Precision" height="40">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#solution">Solution</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#lean-sigma">Lean & Six Sigma</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#project-mgmt">Gestion Projet</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#plm">PLM Connecté</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#demo">Demo</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#contactModal">
+                        Nous contacter
+                    </button>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#quoteModal">
+                        Demander une démo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-  </head>
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center min-vh-100 py-5">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="display-3 fw-bold mb-4">
+                            <span class="text-white">Metrics that</span><br>
+                            <span class="text-success">Matter</span>
+                        </h1>
+                        <p class="lead text-light mb-4">
+                            Connect, Monitor, Optimize.
+                        </p>
+                        <p class="text-light mb-5">
+                            Transformez votre performance industrielle avec notre plateforme unifiée de monitoring temps réel. 
+                            Connectez vos équipements, analysez vos données, optimisez vos processus.
+                        </p>
+                        
+                        <button class="btn btn-success btn-lg me-3" data-bs-toggle="modal" data-bs-target="#quoteModal">
+                            <i class="bi bi-play-circle me-2"></i>
+                            Demander une démo
+                        </button>
+                        
+                        <div class="row mt-5">
+                            <div class="col-4">
+                                <div class="feature-card text-center p-3 rounded bg-white bg-opacity-10">
+                                    <i class="bi bi-speedometer2 text-success fs-2 mb-2"></i>
+                                    <small class="text-light">Temps Réel</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="feature-card text-center p-3 rounded bg-white bg-opacity-10">
+                                    <i class="bi bi-cpu text-primary fs-2 mb-2"></i>
+                                    <small class="text-light">IoT Compatible</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="feature-card text-center p-3 rounded bg-white bg-opacity-10">
+                                    <i class="bi bi-bullseye text-warning fs-2 mb-2"></i>
+                                    <small class="text-light">Lean & Six Sigma</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="hero-image position-relative">
+                        <img src="dashboard-industrie-photo-2-1.jpeg" alt="Dashboard industriel" class="img-fluid rounded shadow-lg">
+                        <div class="position-absolute bottom-0 start-0 end-0 p-4">
+                            <div class="bg-white bg-opacity-90 rounded p-3">
+                                <div class="row text-center">
+                                    <div class="col-6">
+                                        <h4 class="text-success mb-1">98.5%</h4>
+                                        <small class="text-muted">TRS Global</small>
+                                    </div>
+                                    <div class="col-6">
+                                        <h4 class="text-primary mb-1">24/7</h4>
+                                        <small class="text-muted">Monitoring</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    <!-- Solution Section -->
+    <section id="solution" class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-4">Solution IO Metric</h2>
+                <p class="lead text-muted">
+                    Plateforme unifiée de monitoring industriel temps réel pour optimiser 
+                    vos performances opérationnelles
+                </p>
+            </div>
+            
+            <div class="row g-4 mb-5">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-cpu text-primary fs-1"></i>
+                            </div>
+                            <h5 class="card-title">Compatible IoT, PLC, capteurs industriels</h5>
+                            <p class="card-text text-muted">Connectivité universelle avec tous vos équipements industriels existants</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-bar-chart text-success fs-1"></i>
+                            </div>
+                            <h5 class="card-title">Dashboards personnalisables</h5>
+                            <p class="card-text text-muted">Intégration native avec Grafana et Power BI pour vos visualisations</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-database text-info fs-1"></i>
+                            </div>
+                            <h5 class="card-title">Gestion et visualisation des données</h5>
+                            <p class="card-text text-muted">Architecture robuste avec InfluxDB, MongoDB, et Node-RED</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-speedometer2 text-warning fs-1"></i>
+                            </div>
+                            <h5 class="card-title">Monitoring industriel temps réel</h5>
+                            <p class="card-text text-muted">Surveillance continue de vos processus avec alertes intelligentes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-4">Dashboard Démo Interactif</h2>
+                <p class="lead text-muted">
+                    Découvrez en temps réel la puissance de notre plateforme de monitoring industriel
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button id="demoToggle" class="btn btn-success">
+                        <i class="bi bi-play-fill me-2"></i>
+                        Lancer la démo
+                    </button>
+                    <button class="btn btn-outline-primary">
+                        <i class="bi bi-file-text me-2"></i>
+                        Générer rapport
+                    </button>
+                </div>
+            </div>
+            
+            <div class="row g-4 mb-5">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-speedometer2 text-success me-2"></i>
+                                <h6 class="card-title mb-0">TRS Global</h6>
+                            </div>
+                            <h3 class="text-success mb-2" id="trsValue">87.2%</h3>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-success" id="trsProgress" style="width: 87.2%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-lightning text-primary me-2"></i>
+                                <h6 class="card-title mb-0">Disponibilité</h6>
+                            </div>
+                            <h3 class="text-primary mb-2" id="availabilityValue">94.5%</h3>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-primary" id="availabilityProgress" style="width: 94.5%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-thermometer text-info me-2"></i>
+                                <h6 class="card-title mb-0">MTTR</h6>
+                            </div>
+                            <h3 class="text-info mb-2" id="mttrValue">12.3h</h3>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-info" id="mttrProgress" style="width: 50%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-power text-warning me-2"></i>
+                                <h6 class="card-title mb-0">Consommation</h6>
+                            </div>
+                            <h3 class="text-warning mb-2" id="energyValue">156 kW</h3>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar bg-warning" id="energyProgress" style="width: 78%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-5 bg-dark text-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-4">Prêt à Optimiser Votre Performance Industrielle ?</h2>
+                <p class="lead">
+                    Rejoignez les leaders industriels qui font confiance à IO Metric - Precision 
+                    pour digitaliser et optimiser leurs opérations
+                </p>
+            </div>
+            
+            <div class="row g-4 mb-5">
+                <div class="col-lg-6">
+                    <div class="card bg-white bg-opacity-10 border-0 h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-success bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                                <i class="bi bi-calendar text-success fs-1"></i>
+                            </div>
+                            <h4 class="text-white mb-3">Demander une Démo</h4>
+                            <p class="text-light mb-4">
+                                Découvrez notre solution en action avec une démonstration personnalisée adaptée à votre secteur
+                            </p>
+                            <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#quoteModal">
+                                Réserver ma démo
+                                <i class="bi bi-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="card bg-white bg-opacity-10 border-0 h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-primary bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px;">
+                                <i class="bi bi-telephone text-primary fs-1"></i>
+                            </div>
+                            <h4 class="text-white mb-3">Nous Contacter</h4>
+                            <p class="text-light mb-4">
+                                Échangez avec nos experts pour évaluer vos besoins et construire votre projet de digitalisation
+                            </p>
+                            <button class="btn btn-outline-light w-100" data-bs-toggle="modal" data-bs-target="#contactModal">
+                                Prendre contact
+                                <i class="bi bi-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button class="btn btn-lg btn-gradient px-5 py-3" data-bs-toggle="modal" data-bs-target="#quoteModal">
+                    Commencer dès maintenant
+                    <i class="bi bi-arrow-right ms-3"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3">
+                    <img src="ChatGPT Image Jun 28, 2025, 10_40_53 AM copy.png" alt="IO Metric - Precision" height="48" class="mb-3">
+                    <p class="text-light">
+                        Plateforme unifiée de monitoring industriel pour optimiser vos performances opérationnelles.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="https://www.linkedin.com/in/precisio-morocco-❇%EF%B8%8F-897941362/" target="_blank" class="text-light">
+                            <i class="bi bi-linkedin fs-5"></i>
+                        </a>
+                        <a href="#" class="text-light">
+                            <i class="bi bi-twitter fs-5"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3">
+                    <h5 class="mb-3">Solutions</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#solution" class="text-light text-decoration-none">Monitoring IoT</a></li>
+                        <li><a href="#lean-sigma" class="text-light text-decoration-none">Lean & Six Sigma</a></li>
+                        <li><a href="#project-mgmt" class="text-light text-decoration-none">Gestion de Projet</a></li>
+                        <li><a href="#plm" class="text-light text-decoration-none">PLM Connecté</a></li>
+                        <li><a href="#demo" class="text-light text-decoration-none">Dashboard Demo</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3">
+                    <h5 class="mb-3">Secteurs</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light text-decoration-none">Automobile</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Aéronautique</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Agroalimentaire</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Chimie & Pharma</a></li>
+                        <li><a href="#" class="text-light text-decoration-none">Métallurgie</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3">
+                    <h5 class="mb-3">Contact</h5>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-envelope text-primary me-2"></i>
+                        <span>contact@precisio.ma</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-telephone text-primary me-2"></i>
+                        <span>+212 61 440 251</span>
+                    </div>
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-geo-alt text-primary me-2 mt-1"></i>
+                        <span>Maroc</span>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted">© 2026 IO Metric - Precision.ma Tous droits réservés.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-muted text-decoration-none me-3">Mentions légales</a>
+                    <a href="#" class="text-muted text-decoration-none me-3">Politique de confidentialité</a>
+                    <a href="#" class="text-muted text-decoration-none">CGU</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Quote Request Modal -->
+    <div class="modal fade" id="quoteModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Demande de Devis Personnalisé</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="quoteForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Prénom *</label>
+                                <input type="text" class="form-control" name="firstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nom *</label>
+                                <input type="text" class="form-control" name="lastName" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Email professionnel *</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" name="phone">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Entreprise *</label>
+                                <input type="text" class="form-control" name="company" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Secteur d'activité *</label>
+                                <select class="form-select" name="industry" required>
+                                    <option value="">Sélectionnez votre secteur</option>
+                                    <option value="automobile">Automobile</option>
+                                    <option value="aeronautique">Aéronautique</option>
+                                    <option value="agroalimentaire">Agroalimentaire</option>
+                                    <option value="chimie">Chimie & Pharmacie</option>
+                                    <option value="metallurgie">Métallurgie</option>
+                                    <option value="autre">Autre</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Type de projet *</label>
+                                <select class="form-select" name="projectType" required>
+                                    <option value="">Sélectionnez le type</option>
+                                    <option value="monitoring-iot">Monitoring IoT</option>
+                                    <option value="lean-six-sigma">Lean & Six Sigma</option>
+                                    <option value="project-management">Gestion de projet</option>
+                                    <option value="solution-complete">Solution complète</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Description du projet *</label>
+                                <textarea class="form-control" name="description" rows="4" required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="gdprConsent" required>
+                                    <label class="form-check-label">
+                                        J'accepte que mes données soient utilisées pour traiter ma demande *
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" form="quoteForm" class="btn btn-primary">Envoyer la demande</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nous Contacter</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="contactForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nom complet *</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Entreprise *</label>
+                            <input type="text" class="form-control" name="company" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Sujet *</label>
+                            <select class="form-select" name="subject" required>
+                                <option value="">Sélectionnez le sujet</option>
+                                <option value="demo">Demande de démonstration</option>
+                                <option value="quote">Demande de devis</option>
+                                <option value="information">Demande d'information</option>
+                                <option value="support">Support technique</option>
+                                <option value="other">Autre</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Message *</label>
+                            <textarea class="form-control" name="message" rows="4" required></textarea>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="gdprConsent" required>
+                            <label class="form-check-label">
+                                J'accepte que mes données soient utilisées pour traiter ma demande *
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" form="contactForm" class="btn btn-primary">Envoyer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Custom JS -->
+    <script src="assets/js/main.js"></script>
+</body>
 </html>

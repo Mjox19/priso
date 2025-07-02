@@ -27,9 +27,9 @@ const transporter = nodemailer.createTransporter({
     rejectUnauthorized: false,
     ciphers: 'SSLv3'
   },
-  connectionTimeout: 60000, // 60 seconds
-  greetingTimeout: 30000,   // 30 seconds
-  socketTimeout: 60000,     // 60 seconds
+  connectionTimeout: 120000, // 120 seconds (increased from 60)
+  greetingTimeout: 60000,    // 60 seconds (increased from 30)
+  socketTimeout: 120000,     // 120 seconds (increased from 60)
   debug: process.env.NODE_ENV === 'development',
   logger: process.env.NODE_ENV === 'development'
 });

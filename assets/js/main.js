@@ -97,7 +97,7 @@ $(document).ready(function() {
             source: 'Website Quote Request'
         };
         
-        // Send to API
+        // Send to API - Use relative URL
         fetch('/api/quote', {
             method: 'POST',
             headers: {
@@ -105,7 +105,12 @@ $(document).ready(function() {
             },
             body: JSON.stringify(formData)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.message) {
                 // Show success message
@@ -148,7 +153,7 @@ $(document).ready(function() {
             source: 'Website Contact Form'
         };
         
-        // Send to API
+        // Send to API - Use relative URL
         fetch('/api/contact', {
             method: 'POST',
             headers: {
@@ -156,7 +161,12 @@ $(document).ready(function() {
             },
             body: JSON.stringify(formData)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.message) {
                 // Show success message
@@ -219,7 +229,12 @@ $(document).ready(function() {
                 'Content-Type': 'application/json',
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             showToast('📧 Test email sent! Check your inbox.', 'success');
             console.log('Test email result:', data);

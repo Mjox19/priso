@@ -1,5 +1,5 @@
 const express = require('express');
-const nodemailer = require('nodemailer');
+const mailjet = require('node-mailjet');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -14,41 +14,26 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('.'));
 
-// SMTP Configuration with enhanced connection options
-const transporter = nodemailer.createTransporter({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT),
-  secure: process.env.SMTP_SECURE === 'true',
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  },
-  tls: {
-    rejectUnauthorized: false,
-    ciphers: 'SSLv3'
-  },
-  connectionTimeout: 120000, // 120 seconds (increased from 60)
-  greetingTimeout: 60000,    // 60 seconds (increased from 30)
-  socketTimeout: 120000,     // 120 seconds (increased from 60)
-  debug: process.env.NODE_ENV === 'development',
-  logger: process.env.NODE_ENV === 'development'
-});
+// Mailjet Configuration
+const mailjetClient = mailjet.apiConnect(
+  'dc68a5aa4d2f3cb46093c55826f4f708', // API Key
+  'da75d63f0658dad5827fe75a8197f8c4'  // Secret Key
+);
 
-// Verify SMTP connection with better error handling
-const verifyConnection = async () => {
+// Verify Mailjet connection
+const verifyMailjetConnection = async () => {
   try {
-    await transporter.verify();
-    console.log('✅ SMTP server is ready to send emails');
+    const result = await mailjetClient.get('user').request();
+    console.log('✅ Mailjet API connection successful');
     return true;
   } catch (error) {
-    console.error('❌ SMTP connection error:', error.message);
-    console.log('📧 Email service will continue without verification - emails may fail');
+    console.error('❌ Mailjet connection error:', error.message);
     return false;
   }
 };
 
 // Initialize connection verification
-verifyConnection();
+verifyMailjetConnection();
 
 // Email templates
 function getQuoteEmailTemplate(data) {
@@ -234,11 +219,15 @@ function getAutoReplyTemplate(name, type = 'quote') {
   `;
 }
 
-// Enhanced email sending function with retry logic
-async function sendEmailWithRetry(mailOptions, maxRetries = 3) {
+// Enhanced email sending function with Mailjet
+async function sendEmailWithMailjet(emailData, maxRetries = 3) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const result = await transporter.sendMail(mailOptions);
+      const request = mailjetClient.post('send', { version: 'v3.1' }).request({
+        Messages: [emailData]
+      });
+      
+      const result = await request;
       return result;
     } catch (error) {
       console.error(`❌ Email attempt ${attempt} failed:`, error.message);
@@ -274,27 +263,43 @@ app.post('/api/quote', async (req, res) => {
       });
     }
 
-    // Send email to company
-    const companyMailOptions = {
-      from: `"IO Metric - Precision" <${process.env.SMTP_USER}>`,
-      to: process.env.COMPANY_EMAIL || 'contact@precisio.ma',
-      subject: `🎯 Nouvelle demande de devis - ${quoteData.company}`,
-      html: getQuoteEmailTemplate(quoteData)
+    // Email to company
+    const companyEmail = {
+      From: {
+        Email: "nonreply@precisio.ma",
+        Name: "IO Metric - Precision"
+      },
+      To: [
+        {
+          Email: "contact@precisio.ma",
+          Name: "IO Metric Team"
+        }
+      ],
+      Subject: `🎯 Nouvelle demande de devis - ${quoteData.company}`,
+      HTMLPart: getQuoteEmailTemplate(quoteData)
     };
 
-    // Send auto-reply to client
-    const clientMailOptions = {
-      from: `"IO Metric - Precision" <${process.env.SMTP_USER}>`,
-      to: quoteData.email,
-      subject: '✅ Confirmation de votre demande de devis - IO Metric',
-      html: getAutoReplyTemplate(quoteData.firstName, 'quote')
+    // Auto-reply to client
+    const clientEmail = {
+      From: {
+        Email: "nonreply@precisio.ma",
+        Name: "IO Metric - Precision"
+      },
+      To: [
+        {
+          Email: quoteData.email,
+          Name: `${quoteData.firstName} ${quoteData.lastName}`
+        }
+      ],
+      Subject: "✅ Confirmation de votre demande de devis - IO Metric",
+      HTMLPart: getAutoReplyTemplate(quoteData.firstName, 'quote')
     };
 
-    // Send both emails with retry logic
+    // Send both emails
     try {
       await Promise.all([
-        sendEmailWithRetry(companyMailOptions),
-        sendEmailWithRetry(clientMailOptions)
+        sendEmailWithMailjet(companyEmail),
+        sendEmailWithMailjet(clientEmail)
       ]);
 
       console.log(`✅ Quote emails sent successfully for ${quoteData.company}`);
@@ -343,27 +348,43 @@ app.post('/api/contact', async (req, res) => {
       });
     }
 
-    // Send email to company
-    const companyMailOptions = {
-      from: `"IO Metric - Precision" <${process.env.SMTP_USER}>`,
-      to: process.env.COMPANY_EMAIL || 'contact@precisio.ma',
-      subject: `📧 Nouveau message de contact - ${contactData.subject}`,
-      html: getContactEmailTemplate(contactData)
+    // Email to company
+    const companyEmail = {
+      From: {
+        Email: "nonreply@precisio.ma",
+        Name: "IO Metric - Precision"
+      },
+      To: [
+        {
+          Email: "contact@precisio.ma",
+          Name: "IO Metric Team"
+        }
+      ],
+      Subject: `📧 Nouveau message de contact - ${contactData.subject}`,
+      HTMLPart: getContactEmailTemplate(contactData)
     };
 
-    // Send auto-reply to client
-    const clientMailOptions = {
-      from: `"IO Metric - Precision" <${process.env.SMTP_USER}>`,
-      to: contactData.email,
-      subject: '✅ Confirmation de votre message - IO Metric',
-      html: getAutoReplyTemplate(contactData.name, 'contact')
+    // Auto-reply to client
+    const clientEmail = {
+      From: {
+        Email: "nonreply@precisio.ma",
+        Name: "IO Metric - Precision"
+      },
+      To: [
+        {
+          Email: contactData.email,
+          Name: contactData.name
+        }
+      ],
+      Subject: "✅ Confirmation de votre message - IO Metric",
+      HTMLPart: getAutoReplyTemplate(contactData.name, 'contact')
     };
 
-    // Send both emails with retry logic
+    // Send both emails
     try {
       await Promise.all([
-        sendEmailWithRetry(companyMailOptions),
-        sendEmailWithRetry(clientMailOptions)
+        sendEmailWithMailjet(companyEmail),
+        sendEmailWithMailjet(clientEmail)
       ]);
 
       console.log(`✅ Contact emails sent successfully from ${contactData.email}`);
@@ -397,21 +418,28 @@ app.post('/api/contact', async (req, res) => {
 // Test email endpoint
 app.post('/api/test-email', async (req, res) => {
   try {
-    const testMailOptions = {
-      from: `"IO Metric - Test" <${process.env.SMTP_USER}>`,
-      to: process.env.COMPANY_EMAIL || 'contact@precisio.ma',
-      subject: '🧪 Test Email - SMTP Configuration',
-      html: `
+    const testEmail = {
+      From: {
+        Email: "nonreply@precisio.ma",
+        Name: "IO Metric - Test"
+      },
+      To: [
+        {
+          Email: "contact@precisio.ma",
+          Name: "Test Recipient"
+        }
+      ],
+      Subject: "🧪 Test Email - Mailjet Configuration",
+      HTMLPart: `
         <h2>Test Email</h2>
-        <p>This is a test email to verify SMTP configuration.</p>
+        <p>This is a test email to verify Mailjet configuration.</p>
         <p>Sent at: ${new Date().toLocaleString('fr-FR')}</p>
-        <p>SMTP Host: ${process.env.SMTP_HOST}</p>
-        <p>SMTP Port: ${process.env.SMTP_PORT}</p>
+        <p>Service: Mailjet API</p>
       `
     };
 
-    await sendEmailWithRetry(testMailOptions);
-    res.status(200).json({ message: 'Test email sent successfully' });
+    await sendEmailWithMailjet(testEmail);
+    res.status(200).json({ message: 'Test email sent successfully via Mailjet' });
   } catch (error) {
     console.error('❌ Test email failed:', error);
     res.status(500).json({ message: 'Test email failed', error: error.message });
@@ -423,20 +451,19 @@ app.get('/api/health', async (req, res) => {
   const health = {
     status: 'ok',
     timestamp: new Date().toISOString(),
-    smtp: {
-      configured: !!(process.env.SMTP_HOST && process.env.SMTP_USER),
-      host: process.env.SMTP_HOST,
-      port: process.env.SMTP_PORT
+    mailjet: {
+      configured: true,
+      service: 'Mailjet API'
     }
   };
 
-  // Test SMTP connection
+  // Test Mailjet connection
   try {
-    await transporter.verify();
-    health.smtp.status = 'connected';
+    await mailjetClient.get('user').request();
+    health.mailjet.status = 'connected';
   } catch (error) {
-    health.smtp.status = 'error';
-    health.smtp.error = error.message;
+    health.mailjet.status = 'error';
+    health.mailjet.error = error.message;
   }
 
   res.status(200).json(health);
@@ -450,6 +477,6 @@ app.get('/', (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📧 Email service configured with ${process.env.SMTP_HOST}`);
+  console.log(`📧 Email service configured with Mailjet API`);
   console.log(`🔍 Health check available at http://localhost:${PORT}/api/health`);
 });

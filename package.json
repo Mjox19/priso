@@ -2,12 +2,12 @@
   "name": "io-metric-dashboard",
   "version": "1.0.0",
   "description": "IO Metric - Precision Industrial Monitoring Dashboard",
-  "main": "index.html",
+  "main": "server.js",
   "scripts": {
-    "dev": "npx serve -s . -l 8080",
-    "start": "npx serve -s . -l 8080",
+    "dev": "node server.js",
+    "start": "node server.js",
     "build": "echo 'No build step required for static HTML'",
-    "preview": "npx serve -s . -l 8080"
+    "preview": "node server.js"
   },
   "keywords": [
     "industrial",
@@ -19,8 +19,11 @@
   ],
   "author": "IO Metric - Precision",
   "license": "MIT",
-  "devDependencies": {},
   "dependencies": {
-    "serve": "^14.2.1"
+    "express": "^4.18.2",
+    "nodemailer": "^6.9.7",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.3.1"
   }
 }

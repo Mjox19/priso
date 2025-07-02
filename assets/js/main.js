@@ -63,7 +63,7 @@ $(document).ready(function() {
         }
     });
     
-    // Form submissions
+    // Form submissions with real API calls
     $('#quoteForm').submit(function(e) {
         e.preventDefault();
         submitQuoteForm();
@@ -97,20 +97,35 @@ $(document).ready(function() {
             source: 'Website Quote Request'
         };
         
-        // Simulate API call
-        setTimeout(function() {
-            console.log('Quote request submitted:', formData);
-            
-            // Show success message
-            showToast('Votre demande de devis a été envoyée avec succès ! Nous vous contacterons sous 24h.', 'success');
-            
-            // Reset form and close modal
-            form[0].reset();
-            $('#quoteModal').modal('hide');
-            
+        // Send to API
+        fetch('/api/quote', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                // Show success message
+                showToast('✅ Votre demande de devis a été envoyée avec succès ! Nous vous contacterons sous 24h.', 'success');
+                
+                // Reset form and close modal
+                form[0].reset();
+                $('#quoteModal').modal('hide');
+            } else {
+                throw new Error('Erreur lors de l\'envoi');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('❌ Erreur lors de l\'envoi. Veuillez réessayer.', 'error');
+        })
+        .finally(() => {
             // Reset button
             submitBtn.text(originalText).prop('disabled', false);
-        }, 1500);
+        });
     }
     
     function submitContactForm() {
@@ -133,20 +148,35 @@ $(document).ready(function() {
             source: 'Website Contact Form'
         };
         
-        // Simulate API call
-        setTimeout(function() {
-            console.log('Contact form submitted:', formData);
-            
-            // Show success message
-            showToast('Votre message a été envoyé avec succès ! Nous vous contacterons sous 24h.', 'success');
-            
-            // Reset form and close modal
-            form[0].reset();
-            $('#contactModal').modal('hide');
-            
+        // Send to API
+        fetch('/api/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                // Show success message
+                showToast('✅ Votre message a été envoyé avec succès ! Nous vous contacterons sous 24h.', 'success');
+                
+                // Reset form and close modal
+                form[0].reset();
+                $('#contactModal').modal('hide');
+            } else {
+                throw new Error('Erreur lors de l\'envoi');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('❌ Erreur lors de l\'envoi. Veuillez réessayer.', 'error');
+        })
+        .finally(() => {
             // Reset button
             submitBtn.text(originalText).prop('disabled', false);
-        }, 1500);
+        });
     }
     
     function showToast(message, type = 'info') {
@@ -180,6 +210,25 @@ $(document).ready(function() {
             $(this).remove();
         });
     }
+    
+    // Test email functionality (for development)
+    window.testEmail = function() {
+        fetch('/api/test-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            showToast('📧 Test email sent! Check your inbox.', 'success');
+            console.log('Test email result:', data);
+        })
+        .catch(error => {
+            showToast('❌ Test email failed.', 'error');
+            console.error('Test email error:', error);
+        });
+    };
     
     // Navbar scroll effect
     $(window).scroll(function() {
@@ -243,5 +292,6 @@ function validatePhone(phone) {
 window.IOMetric = {
     formatNumber,
     validateEmail,
-    validatePhone
+    validatePhone,
+    testEmail: window.testEmail
 };

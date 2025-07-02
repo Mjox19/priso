@@ -3,6 +3,7 @@ const mailjet = require('node-mailjet');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
+const fs = require('fs').promises;
 require('dotenv').config();
 
 const app = express();
@@ -13,6 +14,97 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('.'));
+
+// Storage configuration
+const STORAGE_DIR = path.join(__dirname, 'data');
+const QUOTES_FILE = path.join(STORAGE_DIR, 'quotes.json');
+const CONTACTS_FILE = path.join(STORAGE_DIR, 'contacts.json');
+
+// Initialize storage
+async function initializeStorage() {
+  try {
+    await fs.mkdir(STORAGE_DIR, { recursive: true });
+    
+    // Initialize quotes file if it doesn't exist
+    try {
+      await fs.access(QUOTES_FILE);
+    } catch {
+      await fs.writeFile(QUOTES_FILE, JSON.stringify([], null, 2));
+      console.log('📁 Created quotes storage file');
+    }
+    
+    // Initialize contacts file if it doesn't exist
+    try {
+      await fs.access(CONTACTS_FILE);
+    } catch {
+      await fs.writeFile(CONTACTS_FILE, JSON.stringify([], null, 2));
+      console.log('📁 Created contacts storage file');
+    }
+    
+    console.log('✅ Storage initialized successfully');
+  } catch (error) {
+    console.error('❌ Failed to initialize storage:', error);
+  }
+}
+
+// Storage functions
+async function saveQuote(quoteData) {
+  try {
+    const quotes = await loadQuotes();
+    const newQuote = {
+      id: `quote_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      ...quoteData,
+      savedAt: new Date().toISOString()
+    };
+    
+    quotes.push(newQuote);
+    await fs.writeFile(QUOTES_FILE, JSON.stringify(quotes, null, 2));
+    console.log(`💾 Quote saved with ID: ${newQuote.id}`);
+    return newQuote;
+  } catch (error) {
+    console.error('❌ Failed to save quote:', error);
+    throw error;
+  }
+}
+
+async function saveContact(contactData) {
+  try {
+    const contacts = await loadContacts();
+    const newContact = {
+      id: `contact_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      ...contactData,
+      savedAt: new Date().toISOString()
+    };
+    
+    contacts.push(newContact);
+    await fs.writeFile(CONTACTS_FILE, JSON.stringify(contacts, null, 2));
+    console.log(`💾 Contact saved with ID: ${newContact.id}`);
+    return newContact;
+  } catch (error) {
+    console.error('❌ Failed to save contact:', error);
+    throw error;
+  }
+}
+
+async function loadQuotes() {
+  try {
+    const data = await fs.readFile(QUOTES_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('❌ Failed to load quotes:', error);
+    return [];
+  }
+}
+
+async function loadContacts() {
+  try {
+    const data = await fs.readFile(CONTACTS_FILE, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('❌ Failed to load contacts:', error);
+    return [];
+  }
+}
 
 // Mailjet Configuration
 const mailjetClient = mailjet.apiConnect(
@@ -32,7 +124,8 @@ const verifyMailjetConnection = async () => {
   }
 };
 
-// Initialize connection verification
+// Initialize connection verification and storage
+initializeStorage();
 verifyMailjetConnection();
 
 // Email templates
@@ -61,6 +154,10 @@ function getQuoteEmailTemplate(data) {
         </div>
         <div class="content">
           <h2>Informations du Client</h2>
+          <div class="field">
+            <span class="label">ID de la demande:</span>
+            <span class="value">${data.id || 'N/A'}</span>
+          </div>
           <div class="field">
             <span class="label">Nom:</span>
             <span class="value">${data.firstName} ${data.lastName}</span>
@@ -131,6 +228,10 @@ function getContactEmailTemplate(data) {
         </div>
         <div class="content">
           <h2>Informations du Contact</h2>
+          <div class="field">
+            <span class="label">ID du message:</span>
+            <span class="value">${data.id || 'N/A'}</span>
+          </div>
           <div class="field">
             <span class="label">Nom:</span>
             <span class="value">${data.name}</span>
@@ -263,6 +364,17 @@ app.post('/api/quote', async (req, res) => {
       });
     }
 
+    // Save quote to storage first
+    let savedQuote;
+    try {
+      savedQuote = await saveQuote(quoteData);
+      console.log(`💾 Quote saved successfully: ${savedQuote.id}`);
+    } catch (saveError) {
+      console.error('❌ Failed to save quote:', saveError);
+      // Continue with email sending even if save fails
+      savedQuote = { id: `quote_${Date.now()}`, ...quoteData };
+    }
+
     // Email to company
     const companyEmail = {
       From: {
@@ -275,8 +387,8 @@ app.post('/api/quote', async (req, res) => {
           Name: "IO Metric Team"
         }
       ],
-      Subject: `🎯 Nouvelle demande de devis - ${quoteData.company}`,
-      HTMLPart: getQuoteEmailTemplate(quoteData)
+      Subject: `🎯 Nouvelle demande de devis - ${savedQuote.company}`,
+      HTMLPart: getQuoteEmailTemplate(savedQuote)
     };
 
     // Auto-reply to client
@@ -287,12 +399,12 @@ app.post('/api/quote', async (req, res) => {
       },
       To: [
         {
-          Email: quoteData.email,
-          Name: `${quoteData.firstName} ${quoteData.lastName}`
+          Email: savedQuote.email,
+          Name: `${savedQuote.firstName} ${savedQuote.lastName}`
         }
       ],
       Subject: "✅ Confirmation de votre demande de devis - IO Metric",
-      HTMLPart: getAutoReplyTemplate(quoteData.firstName, 'quote')
+      HTMLPart: getAutoReplyTemplate(savedQuote.firstName, 'quote')
     };
 
     // Send both emails
@@ -302,11 +414,11 @@ app.post('/api/quote', async (req, res) => {
         sendEmailWithMailjet(clientEmail)
       ]);
 
-      console.log(`✅ Quote emails sent successfully for ${quoteData.company}`);
+      console.log(`✅ Quote emails sent successfully for ${savedQuote.company}`);
 
       res.status(200).json({ 
         message: 'Demande de devis envoyée avec succès',
-        id: `quote_${Date.now()}`,
+        id: savedQuote.id,
         estimatedResponse: '24 heures'
       });
     } catch (emailError) {
@@ -315,7 +427,7 @@ app.post('/api/quote', async (req, res) => {
       // Still return success to user but log the email failure
       res.status(200).json({ 
         message: 'Demande de devis reçue avec succès',
-        id: `quote_${Date.now()}`,
+        id: savedQuote.id,
         estimatedResponse: '24 heures',
         note: 'Email de confirmation en cours de traitement'
       });
@@ -348,6 +460,17 @@ app.post('/api/contact', async (req, res) => {
       });
     }
 
+    // Save contact to storage first
+    let savedContact;
+    try {
+      savedContact = await saveContact(contactData);
+      console.log(`💾 Contact saved successfully: ${savedContact.id}`);
+    } catch (saveError) {
+      console.error('❌ Failed to save contact:', saveError);
+      // Continue with email sending even if save fails
+      savedContact = { id: `contact_${Date.now()}`, ...contactData };
+    }
+
     // Email to company
     const companyEmail = {
       From: {
@@ -360,8 +483,8 @@ app.post('/api/contact', async (req, res) => {
           Name: "IO Metric Team"
         }
       ],
-      Subject: `📧 Nouveau message de contact - ${contactData.subject}`,
-      HTMLPart: getContactEmailTemplate(contactData)
+      Subject: `📧 Nouveau message de contact - ${savedContact.subject}`,
+      HTMLPart: getContactEmailTemplate(savedContact)
     };
 
     // Auto-reply to client
@@ -372,12 +495,12 @@ app.post('/api/contact', async (req, res) => {
       },
       To: [
         {
-          Email: contactData.email,
-          Name: contactData.name
+          Email: savedContact.email,
+          Name: savedContact.name
         }
       ],
       Subject: "✅ Confirmation de votre message - IO Metric",
-      HTMLPart: getAutoReplyTemplate(contactData.name, 'contact')
+      HTMLPart: getAutoReplyTemplate(savedContact.name, 'contact')
     };
 
     // Send both emails
@@ -387,11 +510,11 @@ app.post('/api/contact', async (req, res) => {
         sendEmailWithMailjet(clientEmail)
       ]);
 
-      console.log(`✅ Contact emails sent successfully from ${contactData.email}`);
+      console.log(`✅ Contact emails sent successfully from ${savedContact.email}`);
 
       res.status(200).json({ 
         message: 'Message envoyé avec succès',
-        id: `contact_${Date.now()}`,
+        id: savedContact.id,
         estimatedResponse: '24 heures'
       });
     } catch (emailError) {
@@ -400,7 +523,7 @@ app.post('/api/contact', async (req, res) => {
       // Still return success to user but log the email failure
       res.status(200).json({ 
         message: 'Message reçu avec succès',
-        id: `contact_${Date.now()}`,
+        id: savedContact.id,
         estimatedResponse: '24 heures',
         note: 'Email de confirmation en cours de traitement'
       });
@@ -412,6 +535,70 @@ app.post('/api/contact', async (req, res) => {
       message: 'Erreur lors du traitement du message',
       error: process.env.NODE_ENV === 'development' ? error.message : 'Erreur interne'
     });
+  }
+});
+
+// Admin endpoints to view stored data
+app.get('/api/admin/quotes', async (req, res) => {
+  try {
+    const quotes = await loadQuotes();
+    res.status(200).json({
+      total: quotes.length,
+      quotes: quotes.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
+    });
+  } catch (error) {
+    console.error('❌ Error loading quotes:', error);
+    res.status(500).json({ message: 'Erreur lors du chargement des devis' });
+  }
+});
+
+app.get('/api/admin/contacts', async (req, res) => {
+  try {
+    const contacts = await loadContacts();
+    res.status(200).json({
+      total: contacts.length,
+      contacts: contacts.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
+    });
+  } catch (error) {
+    console.error('❌ Error loading contacts:', error);
+    res.status(500).json({ message: 'Erreur lors du chargement des contacts' });
+  }
+});
+
+app.get('/api/admin/stats', async (req, res) => {
+  try {
+    const quotes = await loadQuotes();
+    const contacts = await loadContacts();
+    
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const thisWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const stats = {
+      total: {
+        quotes: quotes.length,
+        contacts: contacts.length,
+        all: quotes.length + contacts.length
+      },
+      today: {
+        quotes: quotes.filter(q => new Date(q.submittedAt) >= today).length,
+        contacts: contacts.filter(c => new Date(c.submittedAt) >= today).length
+      },
+      thisWeek: {
+        quotes: quotes.filter(q => new Date(q.submittedAt) >= thisWeek).length,
+        contacts: contacts.filter(c => new Date(c.submittedAt) >= thisWeek).length
+      },
+      thisMonth: {
+        quotes: quotes.filter(q => new Date(q.submittedAt) >= thisMonth).length,
+        contacts: contacts.filter(c => new Date(c.submittedAt) >= thisMonth).length
+      }
+    };
+    
+    res.status(200).json(stats);
+  } catch (error) {
+    console.error('❌ Error generating stats:', error);
+    res.status(500).json({ message: 'Erreur lors du calcul des statistiques' });
   }
 });
 
@@ -454,6 +641,11 @@ app.get('/api/health', async (req, res) => {
     mailjet: {
       configured: true,
       service: 'Mailjet API'
+    },
+    storage: {
+      directory: STORAGE_DIR,
+      quotesFile: QUOTES_FILE,
+      contactsFile: CONTACTS_FILE
     }
   };
 
@@ -464,6 +656,17 @@ app.get('/api/health', async (req, res) => {
   } catch (error) {
     health.mailjet.status = 'error';
     health.mailjet.error = error.message;
+  }
+
+  // Test storage
+  try {
+    await fs.access(STORAGE_DIR);
+    await fs.access(QUOTES_FILE);
+    await fs.access(CONTACTS_FILE);
+    health.storage.status = 'accessible';
+  } catch (error) {
+    health.storage.status = 'error';
+    health.storage.error = error.message;
   }
 
   res.status(200).json(health);
@@ -478,5 +681,10 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📧 Email service configured with Mailjet API`);
+  console.log(`💾 Data storage: ${STORAGE_DIR}`);
   console.log(`🔍 Health check available at http://localhost:${PORT}/api/health`);
+  console.log(`📊 Admin endpoints:`);
+  console.log(`   - GET /api/admin/quotes - View all quotes`);
+  console.log(`   - GET /api/admin/contacts - View all contacts`);
+  console.log(`   - GET /api/admin/stats - View statistics`);
 });

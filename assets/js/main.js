@@ -97,7 +97,7 @@ $(document).ready(function() {
             source: 'Website Quote Request'
         };
         
-        // Send to API - Use relative URL
+        // Send to local API endpoint
         fetch('/api/quote', {
             method: 'POST',
             headers: {
@@ -106,12 +106,16 @@ $(document).ready(function() {
             body: JSON.stringify(formData)
         })
         .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
+            console.log('Success response:', data);
             if (data.message) {
                 // Show success message
                 showToast('✅ Votre demande de devis a été envoyée avec succès ! Nous vous contacterons sous 24h.', 'success');
@@ -120,11 +124,11 @@ $(document).ready(function() {
                 form[0].reset();
                 $('#quoteModal').modal('hide');
             } else {
-                throw new Error('Erreur lors de l\'envoi');
+                throw new Error('Réponse invalide du serveur');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error details:', error);
             showToast('❌ Erreur lors de l\'envoi. Veuillez réessayer.', 'error');
         })
         .finally(() => {
@@ -153,7 +157,7 @@ $(document).ready(function() {
             source: 'Website Contact Form'
         };
         
-        // Send to API - Use relative URL
+        // Send to local API endpoint
         fetch('/api/contact', {
             method: 'POST',
             headers: {
@@ -162,12 +166,15 @@ $(document).ready(function() {
             body: JSON.stringify(formData)
         })
         .then(response => {
+            console.log('Response status:', response.status);
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             return response.json();
         })
         .then(data => {
+            console.log('Success response:', data);
             if (data.message) {
                 // Show success message
                 showToast('✅ Votre message a été envoyé avec succès ! Nous vous contacterons sous 24h.', 'success');
@@ -176,11 +183,11 @@ $(document).ready(function() {
                 form[0].reset();
                 $('#contactModal').modal('hide');
             } else {
-                throw new Error('Erreur lors de l\'envoi');
+                throw new Error('Réponse invalide du serveur');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error details:', error);
             showToast('❌ Erreur lors de l\'envoi. Veuillez réessayer.', 'error');
         })
         .finally(() => {

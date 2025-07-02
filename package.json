@@ -4,10 +4,10 @@
   "description": "IO Metric - Precision Industrial Monitoring Dashboard",
   "main": "index.html",
   "scripts": {
-    "dev": "python -m http.server 8080",
-    "start": "python -m http.server 8080",
+    "dev": "npx serve -s . -l 8080",
+    "start": "npx serve -s . -l 8080",
     "build": "echo 'No build step required for static HTML'",
-    "preview": "python -m http.server 8080"
+    "preview": "npx serve -s . -l 8080"
   },
   "keywords": [
     "industrial",
@@ -20,5 +20,7 @@
   "author": "IO Metric - Precision",
   "license": "MIT",
   "devDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
 }

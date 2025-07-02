@@ -14,8 +14,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('.'));
 
-// SMTP Configuration
-const transporter = nodemailer.createTransport({
+// SMTP Configuration with enhanced connection options
+const transporter = nodemailer.createTransporter({
   host: process.env.SMTP_HOST,
   port: parseInt(process.env.SMTP_PORT),
   secure: process.env.SMTP_SECURE === 'true',
@@ -24,18 +24,31 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS
   },
   tls: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+    ciphers: 'SSLv3'
+  },
+  connectionTimeout: 60000, // 60 seconds
+  greetingTimeout: 30000,   // 30 seconds
+  socketTimeout: 60000,     // 60 seconds
+  debug: process.env.NODE_ENV === 'development',
+  logger: process.env.NODE_ENV === 'development'
 });
 
-// Verify SMTP connection
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('SMTP connection error:', error);
-  } else {
+// Verify SMTP connection with better error handling
+const verifyConnection = async () => {
+  try {
+    await transporter.verify();
     console.log('✅ SMTP server is ready to send emails');
+    return true;
+  } catch (error) {
+    console.error('❌ SMTP connection error:', error.message);
+    console.log('📧 Email service will continue without verification - emails may fail');
+    return false;
   }
-});
+};
+
+// Initialize connection verification
+verifyConnection();
 
 // Email templates
 function getQuoteEmailTemplate(data) {
@@ -221,10 +234,34 @@ function getAutoReplyTemplate(name, type = 'quote') {
   `;
 }
 
+// Enhanced email sending function with retry logic
+async function sendEmailWithRetry(mailOptions, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await transporter.sendMail(mailOptions);
+      return result;
+    } catch (error) {
+      console.error(`❌ Email attempt ${attempt} failed:`, error.message);
+      
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Wait before retry (exponential backoff)
+      const delay = Math.pow(2, attempt) * 1000;
+      console.log(`⏳ Retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+
 // API Routes
 app.post('/api/quote', async (req, res) => {
   try {
-    const quoteData = req.body;
+    const quoteData = {
+      ...req.body,
+      submittedAt: new Date().toISOString()
+    };
     
     // Validate required fields
     const requiredFields = ['firstName', 'lastName', 'email', 'company', 'industry', 'projectType', 'description', 'gdprConsent'];
@@ -253,24 +290,36 @@ app.post('/api/quote', async (req, res) => {
       html: getAutoReplyTemplate(quoteData.firstName, 'quote')
     };
 
-    // Send both emails
-    await Promise.all([
-      transporter.sendMail(companyMailOptions),
-      transporter.sendMail(clientMailOptions)
-    ]);
+    // Send both emails with retry logic
+    try {
+      await Promise.all([
+        sendEmailWithRetry(companyMailOptions),
+        sendEmailWithRetry(clientMailOptions)
+      ]);
 
-    console.log(`✅ Quote emails sent successfully for ${quoteData.company}`);
+      console.log(`✅ Quote emails sent successfully for ${quoteData.company}`);
 
-    res.status(200).json({ 
-      message: 'Demande de devis envoyée avec succès',
-      id: `quote_${Date.now()}`,
-      estimatedResponse: '24 heures'
-    });
+      res.status(200).json({ 
+        message: 'Demande de devis envoyée avec succès',
+        id: `quote_${Date.now()}`,
+        estimatedResponse: '24 heures'
+      });
+    } catch (emailError) {
+      console.error('❌ Failed to send emails after retries:', emailError.message);
+      
+      // Still return success to user but log the email failure
+      res.status(200).json({ 
+        message: 'Demande de devis reçue avec succès',
+        id: `quote_${Date.now()}`,
+        estimatedResponse: '24 heures',
+        note: 'Email de confirmation en cours de traitement'
+      });
+    }
 
   } catch (error) {
-    console.error('❌ Error sending quote emails:', error);
+    console.error('❌ Error processing quote request:', error);
     res.status(500).json({ 
-      message: 'Erreur lors de l\'envoi de la demande',
+      message: 'Erreur lors du traitement de la demande',
       error: process.env.NODE_ENV === 'development' ? error.message : 'Erreur interne'
     });
   }
@@ -278,7 +327,10 @@ app.post('/api/quote', async (req, res) => {
 
 app.post('/api/contact', async (req, res) => {
   try {
-    const contactData = req.body;
+    const contactData = {
+      ...req.body,
+      submittedAt: new Date().toISOString()
+    };
     
     // Validate required fields
     const requiredFields = ['name', 'email', 'subject', 'message', 'gdprConsent'];
@@ -307,24 +359,36 @@ app.post('/api/contact', async (req, res) => {
       html: getAutoReplyTemplate(contactData.name, 'contact')
     };
 
-    // Send both emails
-    await Promise.all([
-      transporter.sendMail(companyMailOptions),
-      transporter.sendMail(clientMailOptions)
-    ]);
+    // Send both emails with retry logic
+    try {
+      await Promise.all([
+        sendEmailWithRetry(companyMailOptions),
+        sendEmailWithRetry(clientMailOptions)
+      ]);
 
-    console.log(`✅ Contact emails sent successfully from ${contactData.email}`);
+      console.log(`✅ Contact emails sent successfully from ${contactData.email}`);
 
-    res.status(200).json({ 
-      message: 'Message envoyé avec succès',
-      id: `contact_${Date.now()}`,
-      estimatedResponse: '24 heures'
-    });
+      res.status(200).json({ 
+        message: 'Message envoyé avec succès',
+        id: `contact_${Date.now()}`,
+        estimatedResponse: '24 heures'
+      });
+    } catch (emailError) {
+      console.error('❌ Failed to send emails after retries:', emailError.message);
+      
+      // Still return success to user but log the email failure
+      res.status(200).json({ 
+        message: 'Message reçu avec succès',
+        id: `contact_${Date.now()}`,
+        estimatedResponse: '24 heures',
+        note: 'Email de confirmation en cours de traitement'
+      });
+    }
 
   } catch (error) {
-    console.error('❌ Error sending contact emails:', error);
+    console.error('❌ Error processing contact request:', error);
     res.status(500).json({ 
-      message: 'Erreur lors de l\'envoi du message',
+      message: 'Erreur lors du traitement du message',
       error: process.env.NODE_ENV === 'development' ? error.message : 'Erreur interne'
     });
   }
@@ -346,12 +410,36 @@ app.post('/api/test-email', async (req, res) => {
       `
     };
 
-    await transporter.sendMail(testMailOptions);
+    await sendEmailWithRetry(testMailOptions);
     res.status(200).json({ message: 'Test email sent successfully' });
   } catch (error) {
     console.error('❌ Test email failed:', error);
     res.status(500).json({ message: 'Test email failed', error: error.message });
   }
+});
+
+// Health check endpoint
+app.get('/api/health', async (req, res) => {
+  const health = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    smtp: {
+      configured: !!(process.env.SMTP_HOST && process.env.SMTP_USER),
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT
+    }
+  };
+
+  // Test SMTP connection
+  try {
+    await transporter.verify();
+    health.smtp.status = 'connected';
+  } catch (error) {
+    health.smtp.status = 'error';
+    health.smtp.error = error.message;
+  }
+
+  res.status(200).json(health);
 });
 
 // Serve static files
@@ -363,4 +451,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📧 Email service configured with ${process.env.SMTP_HOST}`);
+  console.log(`🔍 Health check available at http://localhost:${PORT}/api/health`);
 });

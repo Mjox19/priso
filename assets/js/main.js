@@ -143,15 +143,18 @@ $(document).ready(function() {
         
         // Collect form data
         const formData = {
-            name: form.find('input[name="contactName"]').val(),
-            email: form.find('input[name="contactEmail"]').val(),
-            company: form.find('input[name="contactCompany"]').val(),
-            subject: form.find('select[name="contactSubject"]').val(),
-            message: form.find('textarea[name="contactMessage"]').val(),
-            gdprConsent: form.find('input[name="contactGdprConsent"]').is(':checked'),
+            name: form.find('input[name="name"]').val(),
+            email: form.find('input[name="email"]').val(),
+            company: form.find('input[name="company"]').val(),
+            subject: form.find('select[name="subject"]').val(),
+            message: form.find('textarea[name="message"]').val(),
+            gdprConsent: form.find('input[name="gdprConsent"]').is(':checked'),
             submittedAt: new Date().toISOString(),
             source: 'Website Contact Form'
         };
+        
+        // Debug: Log form data to see what's being sent
+        console.log('Contact form data:', formData);
         
         // Send to API - Use relative URL
         fetch('contact-handler.php', {

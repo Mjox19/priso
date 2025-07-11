@@ -39,7 +39,12 @@ foreach ($required_fields as $field) {
 
 if (!empty($missing_fields)) {
     http_response_code(400);
-    echo json_encode(['error' => 'Missing required fields', 'missing' => $missing_fields]);
+    echo json_encode([
+        'error' => 'Missing required fields', 
+        'missing' => $missing_fields,
+        'received_data' => array_keys($input),
+        'form_type' => $form_type
+    ]);
     exit;
 }
 

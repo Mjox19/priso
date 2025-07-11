@@ -4,7 +4,6 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const fs = require('fs').promises;
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -109,7 +108,7 @@ async function loadContacts() {
 // Brevo Configuration
 const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 const apiKey = apiInstance.authentications['apiKey'];
-apiKey.apiKey = 'xkeysib-a8b9c0d1e2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y2z3a4b5c6d7e8f9-abcdefghijklmnop'; // Replace with your actual Brevo API key
+apiKey.apiKey = process.env.BREVO_API_KEY || 'xkeysib-a8b9c0d1e2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y2z3a4b5c6d7e8f9-abcdefghijklmnop';
 
 // Verify Brevo connection
 const verifyBrevoConnection = async () => {
@@ -681,10 +680,14 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📧 Email service configured with Brevo API`);
+  console.log(`🔑 API Key configured: ${apiKey.apiKey ? 'Yes' : 'No'}`);
   console.log(`💾 Data storage: ${STORAGE_DIR}`);
   console.log(`🔍 Health check available at http://localhost:${PORT}/api/health`);
   console.log(`📊 Admin endpoints:`);
   console.log(`   - GET /api/admin/quotes - View all quotes`);
   console.log(`   - GET /api/admin/contacts - View all contacts`);
   console.log(`   - GET /api/admin/stats - View statistics`);
+  console.log(`📝 Form endpoints:`);
+  console.log(`   - POST /api/quote - Submit quote request`);
+  console.log(`   - POST /api/contact - Submit contact form`);
 });

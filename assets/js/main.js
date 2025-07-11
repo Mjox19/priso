@@ -98,7 +98,7 @@ $(document).ready(function() {
         };
         
         // Send to API - Use relative URL
-        fetch('http://localhost:8080/api/quote', {
+        fetch('/api/quote', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ $(document).ready(function() {
         };
         
         // Send to API - Use relative URL
-        fetch('http://localhost:8080/api/contact', {
+        fetch('/api/contact', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -223,7 +223,7 @@ $(document).ready(function() {
     
     // Test email functionality (for development)
     window.testEmail = function() {
-        fetch('http://localhost:8080/api/test-email', {
+        fetch('/api/test-email', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

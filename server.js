@@ -678,7 +678,7 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📧 Email service configured with Brevo API`);
   console.log(`🔑 API Key configured: ${apiKey.apiKey ? 'Yes' : 'No'}`);

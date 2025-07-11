@@ -98,7 +98,7 @@ $(document).ready(function() {
         };
         
         // Send to API - Use relative URL
-        fetch('/api/quote', {
+        fetch('/contact-handler.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ $(document).ready(function() {
         };
         
         // Send to API - Use relative URL
-        fetch('/api/contact', {
+        fetch('/contact-handler.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -223,7 +223,7 @@ $(document).ready(function() {
     
     // Test email functionality (for development)
     window.testEmail = function() {
-        fetch('/api/test-email', {
+        fetch('/contact-handler.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

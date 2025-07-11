@@ -1,5 +1,5 @@
 const express = require('express');
-const mailjet = require('node-mailjet');
+const SibApiV3Sdk = require('@sendinblue/client');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -106,27 +106,28 @@ async function loadContacts() {
   }
 }
 
-// Mailjet Configuration
-const mailjetClient = mailjet.apiConnect(
-  'dc68a5aa4d2f3cb46093c55826f4f708', // API Key
-  'da75d63f0658dad5827fe75a8197f8c4'  // Secret Key
-);
+// Brevo Configuration
+const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+const apiKey = apiInstance.authentications['apiKey'];
+apiKey.apiKey = 'xkeysib-a8b9c0d1e2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y2z3a4b5c6d7e8f9-abcdefghijklmnop'; // Replace with your actual Brevo API key
 
-// Verify Mailjet connection
-const verifyMailjetConnection = async () => {
+// Verify Brevo connection
+const verifyBrevoConnection = async () => {
   try {
-    const result = await mailjetClient.get('user').request();
-    console.log('✅ Mailjet API connection successful');
+    const accountApi = new SibApiV3Sdk.AccountApi();
+    accountApi.authentications['apiKey'].apiKey = apiKey.apiKey;
+    const result = await accountApi.getAccount();
+    console.log('✅ Brevo API connection successful');
     return true;
   } catch (error) {
-    console.error('❌ Mailjet connection error:', error.message);
+    console.error('❌ Brevo connection error:', error.message);
     return false;
   }
 };
 
 // Initialize connection verification and storage
 initializeStorage();
-verifyMailjetConnection();
+verifyBrevoConnection();
 
 // Email templates
 function getQuoteEmailTemplate(data) {
@@ -320,15 +321,12 @@ function getAutoReplyTemplate(name, type = 'quote') {
   `;
 }
 
-// Enhanced email sending function with Mailjet
-async function sendEmailWithMailjet(emailData, maxRetries = 3) {
+// Enhanced email sending function with Brevo
+async function sendEmailWithBrevo(emailData, maxRetries = 3) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const request = mailjetClient.post('send', { version: 'v3.1' }).request({
-        Messages: [emailData]
-      });
-      
-      const result = await request;
+      const result = await apiInstance.sendTransacEmail(emailData);
+      console.log(`✅ Email sent successfully via Brevo (Message ID: ${result.messageId})`);
       return result;
     } catch (error) {
       console.error(`❌ Email attempt ${attempt} failed:`, error.message);
@@ -377,41 +375,41 @@ app.post('/api/quote', async (req, res) => {
 
     // Email to company
     const companyEmail = {
-      From: {
-        Email: "nonreply@precisio.ma",
-        Name: "IO Metric - Precision"
+      sender: {
+        email: "nonreply@precisio.ma",
+        name: "IO Metric - Precision"
       },
-      To: [
+      to: [
         {
-          Email: "contact@precisio.ma",
-          Name: "IO Metric Team"
+          email: "contact@precisio.ma",
+          name: "IO Metric Team"
         }
       ],
-      Subject: `🎯 Nouvelle demande de devis - ${savedQuote.company}`,
-      HTMLPart: getQuoteEmailTemplate(savedQuote)
+      subject: `🎯 Nouvelle demande de devis - ${savedQuote.company}`,
+      htmlContent: getQuoteEmailTemplate(savedQuote)
     };
 
     // Auto-reply to client
     const clientEmail = {
-      From: {
-        Email: "nonreply@precisio.ma",
-        Name: "IO Metric - Precision"
+      sender: {
+        email: "nonreply@precisio.ma",
+        name: "IO Metric - Precision"
       },
-      To: [
+      to: [
         {
-          Email: savedQuote.email,
-          Name: `${savedQuote.firstName} ${savedQuote.lastName}`
+          email: savedQuote.email,
+          name: `${savedQuote.firstName} ${savedQuote.lastName}`
         }
       ],
-      Subject: "✅ Confirmation de votre demande de devis - IO Metric",
-      HTMLPart: getAutoReplyTemplate(savedQuote.firstName, 'quote')
+      subject: "✅ Confirmation de votre demande de devis - IO Metric",
+      htmlContent: getAutoReplyTemplate(savedQuote.firstName, 'quote')
     };
 
     // Send both emails
     try {
       await Promise.all([
-        sendEmailWithMailjet(companyEmail),
-        sendEmailWithMailjet(clientEmail)
+        sendEmailWithBrevo(companyEmail),
+        sendEmailWithBrevo(clientEmail)
       ]);
 
       console.log(`✅ Quote emails sent successfully for ${savedQuote.company}`);
@@ -473,41 +471,41 @@ app.post('/api/contact', async (req, res) => {
 
     // Email to company
     const companyEmail = {
-      From: {
-        Email: "nonreply@precisio.ma",
-        Name: "IO Metric - Precision"
+      sender: {
+        email: "nonreply@precisio.ma",
+        name: "IO Metric - Precision"
       },
-      To: [
+      to: [
         {
-          Email: "contact@precisio.ma",
-          Name: "IO Metric Team"
+          email: "contact@precisio.ma",
+          name: "IO Metric Team"
         }
       ],
-      Subject: `📧 Nouveau message de contact - ${savedContact.subject}`,
-      HTMLPart: getContactEmailTemplate(savedContact)
+      subject: `📧 Nouveau message de contact - ${savedContact.subject}`,
+      htmlContent: getContactEmailTemplate(savedContact)
     };
 
     // Auto-reply to client
     const clientEmail = {
-      From: {
-        Email: "nonreply@precisio.ma",
-        Name: "IO Metric - Precision"
+      sender: {
+        email: "nonreply@precisio.ma",
+        name: "IO Metric - Precision"
       },
-      To: [
+      to: [
         {
-          Email: savedContact.email,
-          Name: savedContact.name
+          email: savedContact.email,
+          name: savedContact.name
         }
       ],
-      Subject: "✅ Confirmation de votre message - IO Metric",
-      HTMLPart: getAutoReplyTemplate(savedContact.name, 'contact')
+      subject: "✅ Confirmation de votre message - IO Metric",
+      htmlContent: getAutoReplyTemplate(savedContact.name, 'contact')
     };
 
     // Send both emails
     try {
       await Promise.all([
-        sendEmailWithMailjet(companyEmail),
-        sendEmailWithMailjet(clientEmail)
+        sendEmailWithBrevo(companyEmail),
+        sendEmailWithBrevo(clientEmail)
       ]);
 
       console.log(`✅ Contact emails sent successfully from ${savedContact.email}`);
@@ -606,27 +604,27 @@ app.get('/api/admin/stats', async (req, res) => {
 app.post('/api/test-email', async (req, res) => {
   try {
     const testEmail = {
-      From: {
-        Email: "nonreply@precisio.ma",
-        Name: "IO Metric - Test"
+      sender: {
+        email: "nonreply@precisio.ma",
+        name: "IO Metric - Test"
       },
-      To: [
+      to: [
         {
-          Email: "contact@precisio.ma",
-          Name: "Test Recipient"
+          email: "contact@precisio.ma",
+          name: "Test Recipient"
         }
       ],
-      Subject: "🧪 Test Email - Mailjet Configuration",
-      HTMLPart: `
+      subject: "🧪 Test Email - Brevo Configuration",
+      htmlContent: `
         <h2>Test Email</h2>
-        <p>This is a test email to verify Mailjet configuration.</p>
+        <p>This is a test email to verify Brevo configuration.</p>
         <p>Sent at: ${new Date().toLocaleString('fr-FR')}</p>
-        <p>Service: Mailjet API</p>
+        <p>Service: Brevo API</p>
       `
     };
 
-    await sendEmailWithMailjet(testEmail);
-    res.status(200).json({ message: 'Test email sent successfully via Mailjet' });
+    await sendEmailWithBrevo(testEmail);
+    res.status(200).json({ message: 'Test email sent successfully via Brevo' });
   } catch (error) {
     console.error('❌ Test email failed:', error);
     res.status(500).json({ message: 'Test email failed', error: error.message });
@@ -638,9 +636,9 @@ app.get('/api/health', async (req, res) => {
   const health = {
     status: 'ok',
     timestamp: new Date().toISOString(),
-    mailjet: {
+    brevo: {
       configured: true,
-      service: 'Mailjet API'
+      service: 'Brevo API'
     },
     storage: {
       directory: STORAGE_DIR,
@@ -649,13 +647,15 @@ app.get('/api/health', async (req, res) => {
     }
   };
 
-  // Test Mailjet connection
+  // Test Brevo connection
   try {
-    await mailjetClient.get('user').request();
-    health.mailjet.status = 'connected';
+    const accountApi = new SibApiV3Sdk.AccountApi();
+    accountApi.authentications['apiKey'].apiKey = apiKey.apiKey;
+    await accountApi.getAccount();
+    health.brevo.status = 'connected';
   } catch (error) {
-    health.mailjet.status = 'error';
-    health.mailjet.error = error.message;
+    health.brevo.status = 'error';
+    health.brevo.error = error.message;
   }
 
   // Test storage
@@ -680,7 +680,7 @@ app.get('/', (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📧 Email service configured with Mailjet API`);
+  console.log(`📧 Email service configured with Brevo API`);
   console.log(`💾 Data storage: ${STORAGE_DIR}`);
   console.log(`🔍 Health check available at http://localhost:${PORT}/api/health`);
   console.log(`📊 Admin endpoints:`);

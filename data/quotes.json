@@ -13,5 +13,20 @@
     "submittedAt": "2025-07-02T10:42:03.411Z",
     "source": "Website Quote Request",
     "savedAt": "2025-07-02T10:42:03.413Z"
+  },
+  {
+    "id": "quote_1752241422274_jhkniporr",
+    "firstName": "Youssef",
+    "lastName": "Joseph",
+    "email": "mssiyahyoussef@gmail.com",
+    "phone": "0649674439",
+    "company": "Promocall",
+    "industry": "automobile",
+    "projectType": "monitoring-iot",
+    "description": "ss",
+    "gdprConsent": true,
+    "submittedAt": "2025-07-11T13:43:42.272Z",
+    "source": "Website Quote Request",
+    "savedAt": "2025-07-11T13:43:42.274Z"
   }
 ]

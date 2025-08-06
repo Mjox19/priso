@@ -5,6 +5,7 @@
   "main": "index.html",
   "scripts": {
     "dev": "vite",
+    "dev:full": "node server.js & npm run dev",
     "build": "vite build",
     "preview": "vite preview"
   },

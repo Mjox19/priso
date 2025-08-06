@@ -9,8 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@getbrevo/brevo": "^3.0.1",
-    "@getbrevo/brevo": "^2.2.0"
+    "@getbrevo/brevo": "^3.0.1"
   },
   "devDependencies": {
     "vite": "^5.4.2"

@@ -99,7 +99,7 @@ contactForm.addEventListener('submit', async (e) => {
     submitBtn.disabled = true;
     
     try {
-        // Send email using Mailjet API
+        // Send email using Brevo API
         const response = await fetch('/api/send-email', {
             method: 'POST',
             headers: {
@@ -110,7 +110,7 @@ contactForm.addEventListener('submit', async (e) => {
         
         if (response.ok) {
             // Success
-            alert('Votre demande de devis a été envoyée avec succès ! Nous vous contacterons bientôt.');
+            showSuccessMessage('✅ Votre demande de devis a été envoyée avec succès ! Vous recevrez un email de confirmation et nous vous contacterons bientôt.');
             contactForm.reset();
         } else {
             throw new Error('Erreur lors de l\'envoi');
@@ -135,7 +135,7 @@ ${data.message}
         // Open email client
         window.location.href = `mailto:contact@decoandco.ma?subject=${emailSubject}&body=${emailBody}`;
         
-        alert('Votre demande de devis va être envoyée à contact@decoandco.ma');
+        showErrorMessage('⚠️ Problème de connexion. Votre client email va s\'ouvrir pour envoyer la demande manuellement.');
         contactForm.reset();
     } finally {
         // Remove loading state
@@ -143,6 +143,51 @@ ${data.message}
         submitBtn.disabled = false;
     }
 });
+
+// Success and Error Messages
+function showSuccessMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'notification success';
+    messageDiv.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-check-circle"></i>
+            <span>${message}</span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    document.body.appendChild(messageDiv);
+    
+    // Auto remove after 8 seconds
+    setTimeout(() => {
+        if (messageDiv.parentElement) {
+            messageDiv.remove();
+        }
+    }, 8000);
+}
+
+function showErrorMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'notification error';
+    messageDiv.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>${message}</span>
+            <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    document.body.appendChild(messageDiv);
+    
+    // Auto remove after 8 seconds
+    setTimeout(() => {
+        if (messageDiv.parentElement) {
+            messageDiv.remove();
+        }
+    }, 8000);
+}
 
 // Intersection Observer for Animations
 const observerOptions = {

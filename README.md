@@ -1,4 +1,4 @@
-# DecoAndCo - Décoration d'Intérieur Premium au Maroc
+# 🏠 DecoAndCo - Décoration d'Intérieur Premium au Maroc
 
 Site web moderne et responsive pour DecoAndCo, spécialiste en décoration d'intérieur au Maroc.
 
@@ -7,9 +7,10 @@ Site web moderne et responsive pour DecoAndCo, spécialiste en décoration d'int
 - **Design Responsive** : Optimisé pour tous les appareils (mobile, tablette, desktop)
 - **Navigation Fluide** : Défilement fluide entre les sections
 - **Portfolio Interactif** : Filtrage des projets par catégorie
-- **Formulaire de Contact** : Intégration avec Mailjet pour l'envoi d'emails
+- **Formulaire de Contact** : Intégration avec Brevo pour l'envoi d'emails automatisés
 - **Animations** : Effets visuels modernes et micro-interactions
 - **Performance** : Code optimisé pour un chargement rapide
+- **Assets Locaux** : Toutes les images sont hébergées localement pour de meilleures performances
 
 ## Structure du Projet
 
@@ -17,8 +18,10 @@ Site web moderne et responsive pour DecoAndCo, spécialiste en décoration d'int
 ├── index.html          # Page principale
 ├── styles.css          # Styles CSS
 ├── script.js           # JavaScript interactif
+├── public/
+│   └── images/         # Images locales du site
 ├── api/
-│   └── send-email.js   # API pour l'envoi d'emails via Mailjet
+│   └── send-email.js   # API pour l'envoi d'emails via Brevo
 ├── package.json        # Dépendances du projet
 └── .env.example        # Variables d'environnement exemple
 ```
@@ -40,19 +43,26 @@ Site web moderne et responsive pour DecoAndCo, spécialiste en décoration d'int
    npm run dev
    ```
 
-## Configuration Mailjet
+## Configuration Brevo (ex-Sendinblue)
 
-Pour activer l'envoi d'emails via le formulaire de contact :
+Pour activer l'envoi d'emails automatisés via le formulaire de contact :
 
-1. Créez un compte sur [Mailjet](https://www.mailjet.com/)
-2. Obtenez vos clés API depuis le dashboard Mailjet
+1. Créez un compte sur [Brevo](https://www.brevo.com/)
+2. Obtenez votre clé API depuis le dashboard Brevo (Paramètres > Clés API)
 3. Configurez les variables d'environnement dans `.env` :
    ```
-   MAILJET_API_KEY=votre_cle_api
-   MAILJET_SECRET_KEY=votre_cle_secrete
+   BREVO_API_KEY=votre_cle_api_brevo
    FROM_EMAIL=noreply@decoandco.ma
    TO_EMAIL=contact@decoandco.ma
+   COMPANY_NAME=DecoAndCo
    ```
+
+### Fonctionnalités Email
+
+- **Email de notification** : Envoyé à l'équipe DecoAndCo avec tous les détails de la demande
+- **Email de confirmation** : Envoyé automatiquement au client pour confirmer la réception
+- **Design responsive** : Emails optimisés pour tous les appareils
+- **Fallback** : Ouverture du client email en cas de problème de connexion
 
 ## Sections du Site
 
@@ -67,7 +77,7 @@ Pour activer l'envoi d'emails via le formulaire de contact :
 - **HTML5** : Structure sémantique
 - **CSS3** : Styles modernes avec Flexbox et Grid
 - **JavaScript ES6+** : Interactivité et animations
-- **Mailjet API** : Service d'envoi d'emails
+- **Brevo API** : Service d'envoi d'emails transactionnels
 - **Font Awesome** : Icônes
 - **Google Fonts** : Typographie (Inter)
 

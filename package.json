@@ -9,7 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "node-mailjet": "^6.0.5"
+    "@getbrevo/brevo": "^3.0.1",
+    "@getbrevo/brevo": "^2.2.0"
   },
   "devDependencies": {
     "vite": "^5.4.2"

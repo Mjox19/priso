@@ -1,0 +1,25 @@
+{
+  "name": "decoandco-website",
+  "version": "1.0.0",
+  "description": "DecoAndCo - Décoration d'Intérieur Premium au Maroc",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "node-mailjet": "^6.0.5"
+  },
+  "devDependencies": {
+    "vite": "^5.4.2"
+  },
+  "keywords": [
+    "decoration",
+    "interior-design",
+    "morocco",
+    "decoandco"
+  ],
+  "author": "DecoAndCo",
+  "license": "MIT"
+}

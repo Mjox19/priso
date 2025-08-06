@@ -1,70 +1,88 @@
-# Welcome to your Lovable project
+# DecoAndCo - Décoration d'Intérieur Premium au Maroc
 
-## Project info
+Site web moderne et responsive pour DecoAndCo, spécialiste en décoration d'intérieur au Maroc.
 
-**URL**: https://lovable.dev/projects/7447f6aa-e323-4227-a16e-80b4dae20eea
+## Fonctionnalités
 
-## How can I edit this code?
+- **Design Responsive** : Optimisé pour tous les appareils (mobile, tablette, desktop)
+- **Navigation Fluide** : Défilement fluide entre les sections
+- **Portfolio Interactif** : Filtrage des projets par catégorie
+- **Formulaire de Contact** : Intégration avec Mailjet pour l'envoi d'emails
+- **Animations** : Effets visuels modernes et micro-interactions
+- **Performance** : Code optimisé pour un chargement rapide
 
-There are several ways of editing your application.
+## Structure du Projet
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/7447f6aa-e323-4227-a16e-80b4dae20eea) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+├── index.html          # Page principale
+├── styles.css          # Styles CSS
+├── script.js           # JavaScript interactif
+├── api/
+│   └── send-email.js   # API pour l'envoi d'emails via Mailjet
+├── package.json        # Dépendances du projet
+└── .env.example        # Variables d'environnement exemple
 ```
 
-**Edit a file directly in GitHub**
+## Installation
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. Clonez le projet
+2. Installez les dépendances :
+   ```bash
+   npm install
+   ```
 
-**Use GitHub Codespaces**
+3. Configurez les variables d'environnement :
+   - Copiez `.env.example` vers `.env`
+   - Ajoutez vos clés API Mailjet
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+4. Lancez le serveur de développement :
+   ```bash
+   npm run dev
+   ```
 
-## What technologies are used for this project?
+## Configuration Mailjet
 
-This project is built with:
+Pour activer l'envoi d'emails via le formulaire de contact :
 
-- Static HTML/CSS/JavaScript
-- Node.js serve for development server
+1. Créez un compte sur [Mailjet](https://www.mailjet.com/)
+2. Obtenez vos clés API depuis le dashboard Mailjet
+3. Configurez les variables d'environnement dans `.env` :
+   ```
+   MAILJET_API_KEY=votre_cle_api
+   MAILJET_SECRET_KEY=votre_cle_secrete
+   FROM_EMAIL=noreply@decoandco.ma
+   TO_EMAIL=contact@decoandco.ma
+   ```
 
-## How can I deploy this project?
+## Sections du Site
 
-Simply open [Lovable](https://lovable.dev/projects/7447f6aa-e323-4227-a16e-80b4dae20eea) and click on Share -> Publish.
+- **Accueil** : Hero section avec présentation
+- **Services** : Nos différents services de décoration
+- **Portfolio** : Galerie de nos réalisations avec filtres
+- **À Propos** : Présentation de l'entreprise et valeurs
+- **Contact** : Formulaire de contact et informations
 
-## Can I connect a custom domain to my Lovable project?
+## Technologies Utilisées
 
-Yes, you can!
+- **HTML5** : Structure sémantique
+- **CSS3** : Styles modernes avec Flexbox et Grid
+- **JavaScript ES6+** : Interactivité et animations
+- **Mailjet API** : Service d'envoi d'emails
+- **Font Awesome** : Icônes
+- **Google Fonts** : Typographie (Inter)
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Déploiement
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Le site peut être déployé sur n'importe quelle plateforme supportant les sites statiques :
+- Netlify
+- Vercel
+- GitHub Pages
+- Hébergement traditionnel
+
+Pour le formulaire de contact, assurez-vous que votre plateforme supporte les fonctions serverless ou configurez un backend séparé.
+
+## Contact
+
+Pour toute question concernant le site web :
+- Email : contact@decoandco.ma
+- Téléphone : 06.00.90.84.67 / 07.53.23.64.14

@@ -15,15 +15,15 @@ Site web moderne et responsive pour DecoAndCo, spécialiste en décoration d'int
 ## Structure du Projet
 
 ```
-├── index.html          # Page principale
-├── styles.css          # Styles CSS
-├── script.js           # JavaScript interactif
+├── index.html              # Page principale
+├── styles.css              # Styles CSS
+├── script.js               # JavaScript interactif
 ├── public/
-│   └── images/         # Images locales du site
-├── api/
-│   └── send-email.js   # API pour l'envoi d'emails via Brevo
-├── package.json        # Dépendances du projet
-└── .env.example        # Variables d'environnement exemple
+│   └── images/             # Images locales du site
+├── netlify/
+│   └── functions/          # Fonctions serverless pour l'envoi d'emails
+├── package.json            # Configuration du projet
+└── .env.example            # Variables d'environnement exemple
 ```
 
 ## Installation
@@ -36,7 +36,7 @@ Site web moderne et responsive pour DecoAndCo, spécialiste en décoration d'int
 
 3. Configurez les variables d'environnement :
    - Copiez `.env.example` vers `.env`
-   - Ajoutez vos clés API Mailjet
+   - Ajoutez votre clé API Brevo
 
 4. Lancez le serveur de développement :
    ```bash
@@ -64,6 +64,25 @@ Pour activer l'envoi d'emails automatisés via le formulaire de contact :
 - **Design responsive** : Emails optimisés pour tous les appareils
 - **Fallback** : Ouverture du client email en cas de problème de connexion
 
+## Déploiement
+
+### Netlify (Recommandé)
+
+1. Connectez votre repository GitHub à Netlify
+2. Configurez les variables d'environnement dans Netlify :
+   - `BREVO_API_KEY`
+   - `FROM_EMAIL`
+   - `TO_EMAIL`
+   - `COMPANY_NAME`
+3. Déployez automatiquement
+
+### Autres Plateformes
+
+Le site peut être déployé sur n'importe quelle plateforme supportant les sites statiques avec fonctions serverless :
+- Vercel
+- Cloudflare Pages
+- AWS Amplify
+
 ## Sections du Site
 
 - **Accueil** : Hero section avec présentation
@@ -78,18 +97,9 @@ Pour activer l'envoi d'emails automatisés via le formulaire de contact :
 - **CSS3** : Styles modernes avec Flexbox et Grid
 - **JavaScript ES6+** : Interactivité et animations
 - **Brevo API** : Service d'envoi d'emails transactionnels
+- **Netlify Functions** : Fonctions serverless pour l'API
 - **Font Awesome** : Icônes
 - **Google Fonts** : Typographie (Inter)
-
-## Déploiement
-
-Le site peut être déployé sur n'importe quelle plateforme supportant les sites statiques :
-- Netlify
-- Vercel
-- GitHub Pages
-- Hébergement traditionnel
-
-Pour le formulaire de contact, assurez-vous que votre plateforme supporte les fonctions serverless ou configurez un backend séparé.
 
 ## Contact
 
